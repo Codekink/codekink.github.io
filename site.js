@@ -55,6 +55,12 @@ if (form) {
     if (form.action.includes('YOUR_FORM_ID')) {
       event.preventDefault();
       alert('Thanks! Connect a Formspree form ID to receive inquiries, then this form is ready to go.');
+    } else if (form.action.includes('formsubmit.co')) {
+      // FormSubmit will submit the form normally
+      // Redirect after FormSubmit processes it (2 second delay to ensure submission completes)
+      setTimeout(() => {
+        window.location.href = 'what-to-expect.html';
+      }, 1500);
     }
   });
 }
