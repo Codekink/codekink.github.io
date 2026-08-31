@@ -19,6 +19,12 @@ if (menuButton && nav) {
 const currentYear = document.querySelector('#current-year');
 if (currentYear) currentYear.textContent = new Date().getFullYear();
 
+// Booked dates in YYYY-MM-DD format - UPDATE THIS LIST AS YOU BOOK EVENTS
+const bookedDates = [
+  // Example: '2026-09-15',
+  // Example: '2026-10-03',
+];
+
 const dateInput = document.querySelector('input[name="event_date"]');
 if (dateInput) {
   const today = new Date();
@@ -43,24 +49,46 @@ if (dateInput) {
       return;
     }
     const selectedDate = new Date(`${dateInput.value}T12:00:00`);
-    dateStatus.textContent = `Selected ${selectedDate.toLocaleDateString(undefined, {
-      weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
-    })}. Send the form to confirm availability.`;
+    const isBooked = bookedDates.includes(dateInput.value);
+    
+    if (isBooked) {
+      dateStatus.textContent = `${selectedDate.toLocaleDateString(undefined, {
+        weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+      })} is booked. Try another date.`;
+      dateStatus.style.color = '#c65a24';
+    } else {
+      dateStatus.textContent = `Selected ${selectedDate.toLocaleDateString(undefined, {
+        weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+      })}. Send the form to confirm availability.`;
+      dateStatus.style.color = 'inherit';
+    }
   });
 }
 
 const form = document.querySelector('.contact-form');
 if (form) {
   form.addEventListener('submit', (event) => {
+    const selectedDateInput = document.querySelector('input[name="event_date"]');
+    const selectedDate = selectedDateInput ? selectedDateInput.value : null;
+    
     if (form.action.includes('YOUR_FORM_ID')) {
       event.preventDefault();
       alert('Thanks! Connect a Formspree form ID to receive inquiries, then this form is ready to go.');
     } else if (form.action.includes('formsubmit.co')) {
-      // FormSubmit will submit the form normally
-      // Redirect after FormSubmit processes it (2 second delay to ensure submission completes)
-      setTimeout(() => {
-        window.location.href = 'what-to-expect.html';
-      }, 1500);
+      // Check if date is booked
+      if (selectedDate && bookedDates.includes(selectedDate)) {
+        event.preventDefault();
+        // Redirect to apologies page
+        setTimeout(() => {
+          window.location.href = 'apologies.html';
+        }, 300);
+      } else {
+        // Date is available - FormSubmit will submit the form normally
+        // Redirect after FormSubmit processes it
+        setTimeout(() => {
+          window.location.href = 'what-to-expect.html';
+        }, 1500);
+      }
     }
   });
 }
